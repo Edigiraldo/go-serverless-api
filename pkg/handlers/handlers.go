@@ -1,28 +1,47 @@
 package handlers
 
 import (
-	"context"
+	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 )
 
-func CreateUser(ctx context.Context, req events.APIGatewayProxyRequest, tablename string, dynamoCli dynamodbiface.DynamoDBAPI) (*events.APIGatewayProxyResponse, error) {
+var (
+	ErrMethodNotAllowed = "method not allowed"
+)
+
+type ErrorBody struct {
+	ErrorMsg *string `json:"error_msg,omitempty"`
+}
+
+func CreateUser(req events.APIGatewayProxyRequest, tablename string, dynamoCli dynamodbiface.DynamoDBAPI) (*events.APIGatewayProxyResponse, error) {
 	return nil, nil
 }
 
-func GetUser(ctx context.Context, req events.APIGatewayProxyRequest, tablename string, dynamoCli dynamodbiface.DynamoDBAPI) (*events.APIGatewayProxyResponse, error) {
+func GetUser(req events.APIGatewayProxyRequest, tablename string, dynamoCli dynamodbiface.DynamoDBAPI) (*events.APIGatewayProxyResponse, error) {
 	return nil, nil
 }
 
-func UpdateUser(ctx context.Context, req events.APIGatewayProxyRequest, tablename string, dynamoCli dynamodbiface.DynamoDBAPI) (*events.APIGatewayProxyResponse, error) {
+func UpdateUser(req events.APIGatewayProxyRequest, tablename string, dynamoCli dynamodbiface.DynamoDBAPI) (*events.APIGatewayProxyResponse, error) {
 	return nil, nil
 }
 
-func DeleteUser(ctx context.Context, req events.APIGatewayProxyRequest, tablename string, dynamoCli dynamodbiface.DynamoDBAPI) (*events.APIGatewayProxyResponse, error) {
+func DeleteUser(req events.APIGatewayProxyRequest, tablename string, dynamoCli dynamodbiface.DynamoDBAPI) (*events.APIGatewayProxyResponse, error) {
 	return nil, nil
 }
 
-func UnhandledMethod(ctx context.Context, req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-	return nil, nil
+/**
+ * Handles requests with unexpected methods
+ *
+ * @param req events.APIGatewayProxyRequest - request received
+ *
+ * @returns *events.APIGatewayProxyResponse - response
+ */
+func UnhandledMethod(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
+	errBody := ErrorBody{
+		ErrorMsg: &ErrMethodNotAllowed,
+	}
+
+	return ApiResponse(http.StatusMethodNotAllowed, errBody)
 }

@@ -16,6 +16,7 @@ type User struct {
 	PhoneNumber string `json:"phone_number"`
 }
 
+// Creates an user item in dynamo table
 func CreateUser(user User, tableName string, dynamoCli dynamodbiface.DynamoDBAPI) error {
 
 	av, err := dynamodbattribute.MarshalMap(user)
@@ -33,6 +34,7 @@ func CreateUser(user User, tableName string, dynamoCli dynamodbiface.DynamoDBAPI
 	return err
 }
 
+// Gets user by email
 func GetUser(email, tableName string, dynamoCli dynamodbiface.DynamoDBAPI) (*User, error) {
 
 	input := &dynamodb.GetItemInput{
@@ -57,10 +59,28 @@ func GetUser(email, tableName string, dynamoCli dynamodbiface.DynamoDBAPI) (*Use
 	return &user, nil
 }
 
-func GetUsers(tableName string, dynamoCli dynamodbiface.DynamoDBAPI) error {
-	return nil
+// Gets all users from database
+func GetUsers(tableName string, dynamoCli dynamodbiface.DynamoDBAPI) ([]*User, error) {
+
+	input := &dynamodb.ScanInput{
+		TableName: aws.String(tableName),
+	}
+
+	result, err := dynamoCli.Scan(input)
+	if err != nil {
+		return nil, err
+	}
+
+	users := []*User{}
+	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &users)
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }
 
+// Updates non empty user attributes in dynamo table
 func UpdateUser(user User, tableName string, dynamoCli dynamodbiface.DynamoDBAPI) (*User, error) {
 
 	updateExpression := buildUserUpdateExpression(user)
@@ -101,11 +121,23 @@ func UpdateUser(user User, tableName string, dynamoCli dynamodbiface.DynamoDBAPI
 	return &updatedUserAttrs, nil
 }
 
-func DeleteUser(tableName string, dynamoCli dynamodbiface.DynamoDBAPI) error {
-	return nil
+// Deletes an user by email
+func DeleteUser(email, tableName string, dynamoCli dynamodbiface.DynamoDBAPI) error {
+
+	input := &dynamodb.DeleteItemInput{
+		Key: map[string]*dynamodb.AttributeValue{
+			"email": {
+				S: aws.String(email),
+			},
+		},
+	}
+
+	_, err := dynamoCli.DeleteItem(input)
+	return err
 }
 
-// builds "set first_name=:fn, last_name=:ln, phone_number=:pn" for non empty values
+// Builds "set first_name=:fn, last_name=:ln, phone_number=:pn" to just update
+// non empty values
 func buildUserUpdateExpression(user User) string {
 	updateExpression := "set "
 	toUpdate := make([]string, 3)

@@ -45,14 +45,14 @@ const tablename = "users"
 func handler(ctx context.Context, req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	switch req.HTTPMethod {
 	case http.MethodGet:
-		return handlers.GetUser(ctx, req, tablename, dynamoCli)
+		return handlers.GetUser(req, tablename, dynamoCli)
 	case http.MethodPost:
-		return handlers.CreateUser(ctx, req, tablename, dynamoCli)
+		return handlers.CreateUser(req, tablename, dynamoCli)
 	case http.MethodPut:
-		return handlers.UpdateUser(ctx, req, tablename, dynamoCli)
+		return handlers.UpdateUser(req, tablename, dynamoCli)
 	case http.MethodDelete:
-		return handlers.DeleteUser(ctx, req, tablename, dynamoCli)
+		return handlers.DeleteUser(req, tablename, dynamoCli)
 	default:
-		return handlers.UnhandledMethod(ctx, req)
+		return handlers.UnhandledMethod(req)
 	}
 }

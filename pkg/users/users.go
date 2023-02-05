@@ -1,6 +1,7 @@
 package users
 
 import (
+	"errors"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -16,7 +17,11 @@ type User struct {
 	PhoneNumber string `json:"phone_number"`
 }
 
-// Creates an user item in dynamo table
+var (
+	ErrUserNotFound = "user not found"
+)
+
+// Creates an user item or replaces an existing one in dynamoDB table
 func CreateUser(user User, tableName string, dynamoCli dynamodbiface.DynamoDBAPI) error {
 
 	av, err := dynamodbattribute.MarshalMap(user)
@@ -47,6 +52,11 @@ func GetUser(email, tableName string, dynamoCli dynamodbiface.DynamoDBAPI) (*Use
 
 	result, err := dynamoCli.GetItem(input)
 	if err != nil {
+		var notFoundErr *dynamodb.ResourceNotFoundException
+		if errors.As(err, &notFoundErr) {
+			return &User{}, errors.New(ErrUserNotFound)
+		}
+
 		return &User{}, err
 	}
 
@@ -80,7 +90,7 @@ func GetUsers(tableName string, dynamoCli dynamodbiface.DynamoDBAPI) ([]*User, e
 	return users, nil
 }
 
-// Updates non empty user attributes in dynamo table
+// Updates non empty user attributes in dynamoDB table
 func UpdateUser(user User, tableName string, dynamoCli dynamodbiface.DynamoDBAPI) (*User, error) {
 
 	updateExpression := buildUserUpdateExpression(user)

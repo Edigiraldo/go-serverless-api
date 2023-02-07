@@ -18,6 +18,7 @@ var (
 	ErrInternalServerError = "there was a server error"
 	ErrCreatingUser        = "there was an error while creating the user"
 	ErrInvalidEmailFormat  = "the email format is invalid"
+	ErrGettingUser         = "there was an error while getting the user"
 	ErrUpdatingUser        = "there was an error while updating the user"
 	ErrDeletingUser        = "there was an error while deleting the user"
 )
@@ -94,7 +95,7 @@ func GetUser(req events.APIGatewayProxyRequest, tablename string, dynamoCli dyna
 
 			return ApiResponse(http.StatusNotFound, errBody)
 		} else {
-			errBody.ErrorMsg = &ErrCreatingUser
+			errBody.ErrorMsg = &ErrGettingUser
 			log.Print(err)
 
 			return ApiResponse(http.StatusInternalServerError, errBody)

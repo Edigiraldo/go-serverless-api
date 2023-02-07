@@ -48,6 +48,7 @@ func GetUser(email, tableName string, dynamoCli dynamodbiface.DynamoDBAPI) (*Use
 				S: aws.String(email),
 			},
 		},
+		TableName: aws.String(tableName),
 	}
 
 	result, err := dynamoCli.GetItem(input)
@@ -140,6 +141,7 @@ func DeleteUser(email, tableName string, dynamoCli dynamodbiface.DynamoDBAPI) er
 				S: aws.String(email),
 			},
 		},
+		TableName: aws.String(tableName),
 	}
 
 	_, err := dynamoCli.DeleteItem(input)

@@ -152,7 +152,7 @@ func DeleteUser(email, tableName string, dynamoCli dynamodbiface.DynamoDBAPI) er
 // non empty values
 func buildUserUpdateExpression(user User) string {
 	updateExpression := "set "
-	toUpdate := make([]string, 3)
+	toUpdate := make([]string, 0)
 	if user.FirstName != "" {
 		toUpdate = append(toUpdate, "first_name=:fn")
 	}

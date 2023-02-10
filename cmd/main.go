@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/Edigiraldo/go-serverless-api/pkg/handlers"
+	"github.com/Edigiraldo/go-serverless-api/cmd/handlers"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
